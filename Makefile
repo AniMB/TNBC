@@ -1,7 +1,11 @@
 # Patient Monitor - Top-Level Makefile Orchestrator
 # Enforces reproducible build environment, host unit tests, and firmware compilation.
 
-PYTHON ?= python
+ifeq ($(OS),Windows_NT)
+    PYTHON ?= python
+else
+    PYTHON ?= python3
+endif
 CXX ?= g++
 CXXFLAGS ?= -std=c++17 -Wall -Wextra -O2 -Iinclude
 
