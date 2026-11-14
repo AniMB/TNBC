@@ -10,12 +10,14 @@ echo "=========================================================="
 echo "Setting up Patient Monitor Development Environment"
 echo "=========================================================="
 
-# 1. Check Python
+# 1. Check Python and dependencies
 if ! command -v python3 &>/dev/null; then
     echo "ERROR: python3 is required." >&2
     exit 1
 fi
 echo "[+] Python: $(python3 --version)"
+python3 -m pip install --quiet --upgrade pip 2>/dev/null || true
+python3 -m pip install --quiet -r requirements.txt 2>/dev/null || pip3 install --user -r requirements.txt
 
 # 2. Check Host C++ Compiler and Make
 if ! command -v g++ &>/dev/null && ! command -v clang++ &>/dev/null; then

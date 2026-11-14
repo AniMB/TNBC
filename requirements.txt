@@ -1,0 +1,2 @@
+# Python toolchain dependencies for Adafruit nRF52 firmware builds
+adafruit-nrfutil>=0.5.3
