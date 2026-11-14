@@ -1,0 +1,40 @@
+# Build outputs
+build/
+bin/
+*.elf
+*.hex
+*.bin
+*.map
+*.zip
+*.o
+*.a
+*.obj
+*.exe
+
+# Arduino / IDE Caches
+.arduino15/
+*.ino.cpp
+*.ino.hex
+.vscode/
+.idea/
+*.swp
+*~
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+
+# Patient / Sensitive Data Protection Gate
+data/
+patient_records/
+*.pcap
+*.csv
+*.tsv
+
+# OS Files
+.DS_Store
+Thumbs.db

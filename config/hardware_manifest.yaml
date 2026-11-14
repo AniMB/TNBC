@@ -1,0 +1,85 @@
+# Hardware Manifest for Patient Monitor
+# Defines board platform, target revisions, pin allocations, and confirmation status.
+# Unknown or unverified items are marked UNCONFIRMED / TODO(HARDWARE).
+
+schema_version: "1.0.0"
+
+target_board:
+  name: "SparkFun Pro nRF52840 Mini"
+  sku: "DEV-15025"
+  mcu: "Nordic Semiconductor nRF52840 (ARM Cortex-M4F @ 64MHz)"
+  flash_bytes: 1048576
+  sram_bytes: 262144
+  bootloader: "Adafruit nRF52 Bootloader (UF2 / CDC)"
+  fqbn: "adafruit:nrf52:sparkfunnrf52840mini"
+  status: "BOARD_PACKAGE_VERIFIED"
+
+subsystems:
+  ecg:
+    description: "Continuous SPI ECG acquisition via analog front-end (AFE)"
+    ic_model: "UNCONFIRMED - TODO(HARDWARE)"
+    interface: "SPI"
+    spi_bus_instance: "UNCONFIRMED - TODO(HARDWARE)"
+    cs_pin: "UNCONFIRMED - TODO(HARDWARE)"
+    drdy_pin: "UNCONFIRMED - TODO(HARDWARE)"
+    sample_rate_hz: "UNCONFIRMED - TODO(HARDWARE)"
+    status: "UNCONFIRMED"
+
+  display:
+    description: "Display for real-time status snapshot and administrative profile UI"
+    controller_ic: "UNCONFIRMED - TODO(HARDWARE)"
+    interface: "SPI"
+    cs_pin: "UNCONFIRMED - TODO(HARDWARE)"
+    dc_pin: "UNCONFIRMED - TODO(HARDWARE)"
+    reset_pin: "UNCONFIRMED - TODO(HARDWARE)"
+    status: "UNCONFIRMED"
+
+  storage:
+    description: "MicroSD card persistent session storage"
+    interface: "SPI or SDIO - UNCONFIRMED - TODO(HARDWARE)"
+    cs_pin: "UNCONFIRMED - TODO(HARDWARE)"
+    filesystem: "FAT32 / SdFat"
+    max_file_size_bytes: 536870912 # 512 MiB
+    status: "UNCONFIRMED"
+
+  spo2:
+    description: "Pulse oximetry raw optical sensor"
+    ic_model: "UNCONFIRMED - TODO(HARDWARE)"
+    interface: "I2C or SPI - UNCONFIRMED - TODO(HARDWARE)"
+    status: "UNCONFIRMED"
+
+  blood_pressure:
+    description: "Cuff actuation, pressure sensing, and valve control"
+    pump_driver: "UNCONFIRMED - TODO(HARDWARE)"
+    valve_driver: "UNCONFIRMED - TODO(HARDWARE)"
+    pressure_sensor_ic: "UNCONFIRMED - TODO(HARDWARE)"
+    hardware_safety_interlock: "REQUIRED - Independent hardware relief - UNCONFIRMED"
+    status: "BLOCKED_PENDING_SAFETY_REVIEW"
+
+  power_monitoring:
+    description: "Battery voltage / fuel gauge monitoring"
+    sensor_type: "ADC divider or I2C Fuel Gauge - UNCONFIRMED - TODO(HARDWARE)"
+    pin: "UNCONFIRMED - TODO(HARDWARE)"
+    status: "UNCONFIRMED"
+
+  ble:
+    description: "Nordic BLE telemetry and control"
+    stack: "Adafruit Bluefruit nRF52"
+    service_uuid: "UNCONFIRMED - TODO(HARDWARE)"
+    auth_requirement: "Mandatory pairing/encryption before transmission"
+    status: "UNCONFIRMED"
+
+  buttons:
+    bp_trigger_button:
+      pin: "UNCONFIRMED - TODO(HARDWARE)"
+      isr_edge: "FALLING - UNCONFIRMED"
+      status: "UNCONFIRMED"
+    profile_button:
+      pin: "UNCONFIRMED - TODO(HARDWARE)"
+      isr_edge: "FALLING - UNCONFIRMED"
+      status: "UNCONFIRMED"
+
+safety_gates:
+  cuff_human_connection_authorized: false
+  independent_overpressure_hardware_verified: false
+  medical_electrical_safety_reviewed: false

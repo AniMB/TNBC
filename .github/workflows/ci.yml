@@ -1,0 +1,69 @@
+name: Patient Monitor CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build & Test (Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Host Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cppcheck
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
+          arduino-cli version
+
+      - name: Install Adafruit nRF52 Core (Pinned 1.7.0)
+        run: |
+          ADAFRUIT_INDEX="https://adafruit.github.io/arduino-board-index/package_adafruit_index.json"
+          arduino-cli core update-index --additional-urls "${ADAFRUIT_INDEX}"
+          arduino-cli core install adafruit:nrf52@1.7.0 --additional-urls "${ADAFRUIT_INDEX}"
+
+      - name: Setup Board Support (SparkFun Pro nRF52840 Mini)
+        run: |
+          python3 scripts/install_board_support.py
+
+      - name: Run Toolchain Doctor
+        run: |
+          make doctor
+
+      - name: Run Lint & Safety Audit
+        run: |
+          make lint
+
+      - name: Run Host Unit Tests
+        run: |
+          make test
+
+      - name: Build Firmware
+        run: |
+          make firmware
+
+      - name: Upload Firmware Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: patient-monitor-firmware-prototype
+          path: build/bin/
+          if-no-files-found: error
