@@ -1,4 +1,4 @@
-# Contributing to Patient Monitor
+# Contributing to Patient Monitor CVTD( Cardio Vascular Triage Device)
 
 Thank you for contributing to the Patient Monitor project. This document guides developers through setting up the environment, compiling firmware, running tests without hardware, and submitting changes.
 
