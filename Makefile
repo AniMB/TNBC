@@ -13,19 +13,20 @@ BUILD_DIR ?= build
 BIN_DIR ?= $(BUILD_DIR)/bin
 HOST_TEST_BIN ?= $(BUILD_DIR)/host_tests
 
-# Source files for host unit test compilation
-HOST_TEST_SRCS = \
-	tests/host/test_runner.cpp \
-	src/control/mode_coordinator.cpp \
-	src/control/profile_map.cpp \
-	src/control/profile_button.cpp \
-	src/control/bp_worker.cpp \
-	src/control/bp_button.cpp \
-	src/tasks/ecg_task.cpp \
-	src/tasks/spo2_task.cpp \
-	src/tasks/status_task.cpp \
-	src/tasks/power_task.cpp \
-	src/tasks/sd_task.cpp
+# Recursive wildcard function for cross-platform file discovery across arbitrary directory depths
+rwildcard = $(strip $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d)))
+
+# Automatically discover all C/C++ source files in src/ and all internal subdirectories
+SRC_SRCS := $(call rwildcard,src,*.cpp) $(call rwildcard,src,*.c)
+
+# Automatically discover all test files in tests/ and all internal subdirectories
+TEST_SRCS := $(call rwildcard,tests,*.cpp) $(call rwildcard,tests,*.c)
+
+# Header files for dependency tracking
+HEADERS := $(call rwildcard,include,*.h) $(call rwildcard,include,*.hpp) $(call rwildcard,config,*.h) $(call rwildcard,src,*.h)
+
+# Full source set for host unit test compilation (all tests + all src files and internal subdirectories)
+HOST_TEST_SRCS := $(TEST_SRCS) $(SRC_SRCS)
 
 .PHONY: all setup doctor test firmware upload lint check clean help
 
@@ -51,11 +52,14 @@ doctor:
 	$(PYTHON) scripts/verify_toolchain.py
 
 test: $(HOST_TEST_BIN)
-	@echo "==> Running host unit tests..."
+	@echo "==> Running host unit tests across discovered suites..."
 	$(HOST_TEST_BIN)
 
-$(HOST_TEST_BIN): $(HOST_TEST_SRCS)
+$(HOST_TEST_BIN): $(HOST_TEST_SRCS) $(HEADERS)
 	@mkdir -p $(BUILD_DIR) 2>/dev/null || $(PYTHON) -c "import os; os.makedirs('$(BUILD_DIR)', exist_ok=True)"
+	@echo "==> Compiling host tests with discovered files:"
+	@echo "    Test files   : $(TEST_SRCS)"
+	@echo "    Source files : $(SRC_SRCS)"
 	$(CXX) $(CXXFLAGS) $(HOST_TEST_SRCS) -o $(HOST_TEST_BIN)
 
 firmware:
